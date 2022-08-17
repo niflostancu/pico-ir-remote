@@ -1,0 +1,15 @@
+# RPI Pico git ignore list
+
+# Generated files
+build/
+cmake-*
+*.pdf
+
+# IDE / project files
+.idea
+.vscode
+
+# Misc / metadata
+.DS_Store
+_deps/
+

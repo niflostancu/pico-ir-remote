@@ -1,0 +1,79 @@
+.program ir_custom_nec_control
+
+; Transmits the proprietary IR Air Conditioner frame.
+;
+; Accepts 4 x 32-bit words (first one is a 2-byte header) from the transmit FIFO
+; and sends them least-significant bit first using Pulse Distance Modulation.
+;
+.define BURST_IRQ         7             ; the IRQ used to trigger a carrier burst
+.define SIGNAL_IRQ        6             ; the IRQ used to signal burst end
+.define WORDS_PER_PACKET  3             ; number of words per packet (w/o header)
+.define SYNC_BURSTS       11            ; how many bursts to transmit for a SYNC
+.define SYNC_SPACE_DELAY  62            ; start delay (in ticks) after sync
+.define SHORT_DELAY       8             ; short delay (space) for logical 0
+.define LONG_DELAY        30            ; long delay (space) for logical 1
+
+.wrap_target
+    pull                                ; fetch the header word
+
+    set X, (SYNC_BURSTS - 1)            ; send a sync burst
+sync_burst:
+    irq wait BURST_IRQ [9]
+    jmp X-- sync_burst
+
+    nop [SYNC_SPACE_DELAY / 2]
+    nop [SYNC_SPACE_DELAY / 2]
+
+    set Y, 16
+    jmp header_bit_start
+
+header_bit:
+    out X, 1
+    jmp !X header_bit_start
+    nop [LONG_DELAY]
+header_bit_start:
+    irq wait BURST_IRQ [10]
+    irq wait BURST_IRQ [10 + SHORT_DELAY]
+
+    jmp Y-- header_bit
+
+    set Y, (WORDS_PER_PACKET - 1)
+
+data_packet:
+    pull
+
+data_bit:
+    out X, 1
+    jmp !X data_bit_start
+    nop [LONG_DELAY]
+data_bit_start:
+    irq wait BURST_IRQ [10]
+    irq wait BURST_IRQ [10 + SHORT_DELAY]
+
+    jmp !OSRE data_bit
+    jmp Y-- data_packet
+
+.wrap
+
+
+% c-sdk {
+static inline void ir_custom_nec_control_program_init (PIO pio, uint sm, uint offset, float freq, int bits_per_frame)
+{
+    pio_sm_config c = ir_custom_nec_control_program_get_default_config(offset);
+
+    sm_config_set_out_shift (&c,
+			true,       // shift right
+			false,      // disable autopull
+			bits_per_frame);
+
+    // join the FIFOs to make a single large transmit FIFO
+    sm_config_set_fifo_join (&c, PIO_FIFO_JOIN_TX);
+
+    // configure the clock divider
+    float div = clock_get_hz (clk_sys) / (freq);
+    sm_config_set_clkdiv (&c, div);
+
+    // apply the configuration to the state machine
+    pio_sm_init(pio, sm, offset, &c);
+}
+%}
