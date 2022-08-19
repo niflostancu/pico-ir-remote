@@ -11,7 +11,8 @@ if(PICO_SDK_VERSION_STRING VERSION_LESS "1.3.0")
   message(FATAL_ERROR "Raspberry Pi Pico SDK version 1.3.0 (or later) required. Your version is ${PICO_SDK_VERSION_STRING}")
 endif()
 
-set(PICO_EXAMPLES_PATH ${PROJECT_SOURCE_DIR})
+include_directories("${CMAKE_SOURCE_DIR}")
+list(APPEND PICO_CONFIG_HEADER_FILES custom_config.h)
 
 # Initialize the SDK
 pico_sdk_init()
@@ -20,12 +21,17 @@ if(TARGET tinyusb_device)
   add_executable(
     pico_ir_remote
     main.c
+    commands.c
+    device_mgr.c
   )
 
   add_subdirectory(lib)
 
   # pull in common dependencies
-  target_link_libraries(pico_ir_remote pico_stdlib hardware_pio ir_custom_tx)
+  target_link_libraries(
+    pico_ir_remote pico_stdlib hardware_pio
+    ir_custom_tx pico_cli_lib
+    )
   # workaround for USB Errata RP2040-E5
   target_compile_definitions(pico_ir_remote PUBLIC PICO_RP2040_USB_DEVICE_ENUMERATION_FIX=1)
 

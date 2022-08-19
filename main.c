@@ -9,14 +9,23 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "pico/stdlib.h"
 #include <tusb.h>
 
-#include "./lib/ir_custom_tx/ir_cust_tx.h"
-#include "./config.h"
+#include "ir_cust_tx.h"
+#include "cli.h"
+#include "./custom_config.h"
+#include "./commands.h"
+#include "./device_mgr.h"
 
-volatile uint8_t capture_started = 0;
+
+static struct pico_cli_state cli;
+
+const struct pico_cli_command_entry main_cli_commands[] = MAIN_CLI_COMMANDS;
+
+static void fatal_error(const char *message);
 
 
 int main() {
@@ -27,27 +36,28 @@ int main() {
 
     stdio_init_all();
 
-    int tx_sm;
-    char msg[100] = "";
-    char c;
+    pico_cli_init(&cli, main_cli_commands,
+                  PICO_CLI_ARRAY_SIZE(main_cli_commands));
 
-    while (!tud_cdc_connected()) { sleep_ms(100);  }
-
-    uint8_t transition_detected = 0;
-
-    tx_sm = ir_custom_nec_tx_init(pio0, BOARD_IR_LED_OUT);
-    if (tx_sm == -1) {
-        printf("could not configure PIO\n");
-        return -1;
+    int ret = device_mgr_init();
+    if (ret < 0) {
+        fatal_error("FATAL: unable to initialize PIO!\n");
+        return 1;
     }
 
     while (1) {
-        pio_sm_put_blocking(pio0, tx_sm, ir_custom_swap_bytes(0xCB230000));
-        pio_sm_put_blocking(pio0, tx_sm, ir_custom_swap_bytes(0x26020040));
-        pio_sm_put_blocking(pio0, tx_sm, ir_custom_swap_bytes(0x00000000));
-        pio_sm_put_blocking(pio0, tx_sm, ir_custom_swap_bytes(0x00000065));
-        printf("SENT\r\n");
-        sleep_ms(1500);
+        if (tud_cdc_connected()) {
+            /* only enable CLI if the device was plugged into a bhopst */
+            pico_cli_process(&cli);
+        }
     }
     return 0;
 }
+
+void fatal_error(const char *message)
+{
+    while (!tud_cdc_connected()) { sleep_ms(10); }
+    printf(message);
+    exit(1);
+}
+

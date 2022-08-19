@@ -1,9 +1,8 @@
+#ifndef _LIB_IR_CUST_TX_H
+#define _LIB_IR_CUST_TX_H 1
 /**
  * Custom IR protocol transmitter library for RPI Pico.
  */
-
-#ifndef _LIB_IR_CUST_TX_H
-#define _LIB_IR_CUST_TX_H 1
 
 #include <stdint.h>
 
