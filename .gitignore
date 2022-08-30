@@ -8,6 +8,7 @@ cmake-*
 # IDE / project files
 .idea
 .vscode
+compile_commands.*
 
 # Misc / metadata
 .DS_Store
