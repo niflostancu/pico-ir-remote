@@ -38,6 +38,10 @@ int pico_cli_process(struct pico_cli_state *cli)
             cli->cur_line_len = 0;
             cli->state = PICO_CLI_STATE_INIT;
         }
+        if (cli->state == PICO_CLI_STATE_INIT) {
+            printf("# ");
+            cli->state = PICO_CLI_STATE_STARTED;
+        }
         int raw = getchar_timeout_us(PICO_CLI_GETCHAR_TIMEOUT);
         if (raw == PICO_ERROR_TIMEOUT)
             return 0;
@@ -74,7 +78,6 @@ int pico_cli_process(struct pico_cli_state *cli)
                 }
                 break;
         }
-        cli->state = PICO_CLI_STATE_STARTED;
     }
 
 _line_complete:

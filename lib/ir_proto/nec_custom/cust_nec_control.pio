@@ -1,4 +1,4 @@
-.program ir_custom_nec_control
+.program cust_nec_control
 
 ; Transmits the proprietary IR Air Conditioner frame.
 ;
@@ -57,9 +57,9 @@ data_bit_start:
 
 
 % c-sdk {
-static inline void ir_custom_nec_control_program_init (PIO pio, uint sm, uint offset, float freq, int bits_per_frame)
+static inline void cust_nec_control_program_init (PIO pio, uint sm, uint offset, float freq, int bits_per_frame)
 {
-    pio_sm_config c = ir_custom_nec_control_program_get_default_config(offset);
+    pio_sm_config c = cust_nec_control_program_get_default_config(offset);
 
     sm_config_set_out_shift (&c,
 			true,       // shift right

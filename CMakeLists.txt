@@ -18,24 +18,14 @@ list(APPEND PICO_CONFIG_HEADER_FILES custom_config.h)
 pico_sdk_init()
 
 if(TARGET tinyusb_device)
-  add_executable(
-    pico_ir_remote
-    main.c
-    commands.c
-    device_mgr.c
-  )
-
+  add_executable(pico_ir_remote main.c)
   add_subdirectory(lib)
 
   # pull in common dependencies
-  target_link_libraries(
-    pico_ir_remote pico_stdlib hardware_pio
-    ir_custom_tx pico_cli_lib
-    )
+  target_link_libraries(pico_ir_remote pico_stdlib main_lib)
   # workaround for USB Errata RP2040-E5
   target_compile_definitions(pico_ir_remote PUBLIC PICO_RP2040_USB_DEVICE_ENUMERATION_FIX=1)
 
-  # enable usb output, disable uart output
   pico_enable_stdio_usb(pico_ir_remote 1)
   pico_enable_stdio_uart(pico_ir_remote 0)
 

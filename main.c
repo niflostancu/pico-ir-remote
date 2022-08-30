@@ -5,7 +5,7 @@
  */
 
 /**
-* Main program unit (a simple demo, for now).
+* Main program module (MCU entrypoint).
 */
 
 #include <stdio.h>
@@ -14,44 +14,45 @@
 #include "pico/stdlib.h"
 #include <tusb.h>
 
-#include "ir_cust_tx.h"
-#include "cli.h"
-#include "./custom_config.h"
-#include "./commands.h"
-#include "./device_mgr.h"
+#include "lib/main/commands.h"
+#include "lib/main/device_mgr.h"
+#include "custom_config.h"
 
 
-static struct pico_cli_state cli;
-
-const struct pico_cli_command_entry main_cli_commands[] = MAIN_CLI_COMMANDS;
-
+static void board_init();
 static void fatal_error(const char *message);
 
 
 int main() {
-    gpio_init(BOARD_IR_LED_OUT);
-    gpio_set_dir(BOARD_IR_LED_OUT, 1);
-    gpio_set_slew_rate(BOARD_IR_LED_OUT, GPIO_SLEW_RATE_FAST);
-    gpio_set_drive_strength(BOARD_IR_LED_OUT, GPIO_DRIVE_STRENGTH_12MA);
-
+    board_init();
     stdio_init_all();
 
-    pico_cli_init(&cli, main_cli_commands,
-                  PICO_CLI_ARRAY_SIZE(main_cli_commands));
+    main_cmd_init();
 
     int ret = device_mgr_init();
     if (ret < 0) {
-        fatal_error("FATAL: unable to initialize PIO!\n");
+        fatal_error("FATAL: unable to initialize the device!\n");
         return 1;
     }
 
     while (1) {
         if (tud_cdc_connected()) {
-            /* only enable CLI if the device was plugged into a bhopst */
-            pico_cli_process(&cli);
+            /* only enable CLI if the device was connected to a host */
+            main_cli_process();
         }
     }
     return 0;
+}
+
+/**
+ * Initializes the board peripherals.
+ */
+void board_init()
+{
+    gpio_init(BOARD_IR_LED_PIN);
+    gpio_set_dir(BOARD_IR_LED_PIN, 1);
+    gpio_set_slew_rate(BOARD_IR_LED_PIN, GPIO_SLEW_RATE_FAST);
+    gpio_set_drive_strength(BOARD_IR_LED_PIN, GPIO_DRIVE_STRENGTH_12MA);
 }
 
 void fatal_error(const char *message)

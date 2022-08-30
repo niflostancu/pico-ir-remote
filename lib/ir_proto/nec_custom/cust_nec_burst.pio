@@ -1,7 +1,6 @@
-.program ir_custom_nec_burst
+.program cust_nec_burst
 
 ; Generates a carrier burst at the requested frequency with pre-defined length
-; (10 cycles).
 
 .define NUM_CYCLES  10              ; how many carrier cycles to generate
 .define BURST_IRQ   7               ; which IRQ should trigger a carrier burst
@@ -19,16 +18,16 @@ cycle_loop:
 
 
 % c-sdk {
-static inline void ir_custom_nec_burst_program_init(PIO pio, uint sm, uint offset, uint pin, float freq)
+static inline void cust_nec_burst_program_init(PIO pio, uint sm, uint offset, uint pin, float freq)
 {
-    pio_sm_config c = ir_custom_nec_burst_program_get_default_config (offset);
+    pio_sm_config c = cust_nec_burst_program_get_default_config (offset);
 
     sm_config_set_set_pins (&c, pin, 1);
     pio_gpio_init (pio, pin);
     pio_sm_set_consecutive_pindirs (pio, sm, pin, 1, true);
 
     // Set the clock divider to generate the required frequency
-    float div = clock_get_hz (clk_sys) / (freq * ir_custom_nec_burst_TICKS_PER_LOOP);
+    float div = clock_get_hz (clk_sys) / (freq * cust_nec_burst_TICKS_PER_LOOP);
     sm_config_set_clkdiv (&c, div);
 
     // Apply the configuration to the state machine
