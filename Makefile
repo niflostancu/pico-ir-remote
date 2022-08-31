@@ -2,8 +2,9 @@
 
 BUILD_DIR=build
 PROJECT=pico_ir_remote
+PICO_W=
 
-CMAKE_ARGS=-DCMAKE_EXPORT_COMPILE_COMMANDS=YES
+CMAKE_ARGS=-DCMAKE_EXPORT_COMPILE_COMMANDS=YES $(if $(PICO_W),-DPICO_BOARD=pico_w,)
 
 # set to 1 to force reboot before flashing
 FORCE = 

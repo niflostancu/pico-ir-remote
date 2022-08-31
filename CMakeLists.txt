@@ -23,6 +23,9 @@ if(TARGET tinyusb_device)
 
   # pull in common dependencies
   target_link_libraries(pico_ir_remote pico_stdlib main_lib)
+  if(PICO_CYW43_SUPPORTED)
+    target_link_libraries(pico_ir_remote pico_cyw43_arch_none)
+  endif()
   # workaround for USB Errata RP2040-E5
   target_compile_definitions(pico_ir_remote PUBLIC PICO_RP2040_USB_DEVICE_ENUMERATION_FIX=1)
 
