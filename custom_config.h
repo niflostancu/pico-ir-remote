@@ -16,7 +16,7 @@
 #define IR_DEV_MODULE_H "starlight_ac.h"
 
 /* Scheduler default setting */
-#define SCHEDULER_DEFAULT_ON_TIME_S   (15 * 60)
-#define SCHEDULER_DEFAULT_OFF_TIME_S  (60 * 60)
+#define SCHEDULER_DEFAULT_ON_TIME_MS   (15 * 60 * 1000)
+#define SCHEDULER_DEFAULT_OFF_TIME_MS  (60 * 60 * 1000)
 
 #endif

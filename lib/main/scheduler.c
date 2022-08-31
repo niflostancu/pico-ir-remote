@@ -17,12 +17,12 @@ static struct scheduler_cfg scheduler_config = {
     .intervals = {
         {
             .status = 1, .next_idx = 1,
-            .period_ms = SCHEDULER_DEFAULT_ON_TIME_S,
+            .period_ms = SCHEDULER_DEFAULT_ON_TIME_MS,
             .apply_state = {.status = 1}
         },
         {
             .status = 1, .next_idx = 0,
-            .period_ms = SCHEDULER_DEFAULT_OFF_TIME_S,
+            .period_ms = SCHEDULER_DEFAULT_OFF_TIME_MS,
             .apply_state = {.status = 0}
         }
     },
@@ -73,7 +73,7 @@ int scheduler_process(uint8_t force_next)
         printf("Scheduler: applied schedule #%i!\r\n", scheduler_state.next_idx);
     }
     /* perpare for the next schedule */
-    scheduler_state.next_time = make_timeout_time_ms(next_sched->period_ms * 1000);
+    scheduler_state.next_time = make_timeout_time_ms(next_sched->period_ms);
     scheduler_state.next_idx = next_sched->next_idx;
     return 1;
 }
