@@ -45,3 +45,12 @@ int device_exec_basic(enum device_mgr_basic_cmd cmd)
     return -0xFF;
 }
 
+/**
+ * Applies a standard device control state.
+ */
+int device_apply_state(struct ir_device_state apply_state)
+{
+    main_device.mod->control_state(&main_device.instdata, apply_state.status != 0);
+    return 0;
+}
+

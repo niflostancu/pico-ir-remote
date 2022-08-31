@@ -16,6 +16,7 @@
 
 #include "lib/main/commands.h"
 #include "lib/main/device_mgr.h"
+#include "lib/main/scheduler.h"
 #include "custom_config.h"
 
 
@@ -28,6 +29,7 @@ int main() {
     stdio_init_all();
 
     main_cmd_init();
+    scheduler_init();
 
     int ret = device_mgr_init();
     if (ret < 0) {
@@ -40,6 +42,7 @@ int main() {
             /* only enable CLI if the device was connected to a host */
             main_cli_process();
         }
+        scheduler_process(0);
     }
     return 0;
 }
@@ -55,6 +58,9 @@ void board_init()
     gpio_set_drive_strength(BOARD_IR_LED_PIN, GPIO_DRIVE_STRENGTH_12MA);
 }
 
+/**
+ * Fatal error: prints a message and stops the MCU execution (using a loop).
+ */
 void fatal_error(const char *message)
 {
     while (!tud_cdc_connected()) { sleep_ms(10); }

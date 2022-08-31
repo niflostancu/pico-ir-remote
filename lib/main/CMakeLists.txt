@@ -3,6 +3,7 @@
 add_library(main_lib
     commands.c
     device_mgr.c
+    scheduler.c
 )
 
 target_link_libraries(main_lib

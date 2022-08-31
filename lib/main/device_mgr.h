@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "./state.h"
+
 /** Basic device commands. */
 enum device_mgr_basic_cmd {
     DEVICE_CMD_OFF = 0,
@@ -20,5 +22,9 @@ int device_mgr_init();
  */
 int device_exec_basic(enum device_mgr_basic_cmd cmd);
 
+/**
+ * Applies a standard device control state.
+ */
+int device_apply_state(struct ir_device_state apply_state);
 
 #endif

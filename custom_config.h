@@ -8,11 +8,15 @@
 
 #define PICO_STDIO_USB_CONNECT_WAIT_TIMEOUT_MS 1000
 
-/** IR LED GPIOs */
-#define BOARD_IR_LED_PIN    1
+/** GPIOs */
+#define BOARD_IR_LED_PIN 			1
 
 /** The controlled IR device model name. */
 #define IR_DEVICE_MODULE starlight_ac
 #define IR_DEV_MODULE_H "starlight_ac.h"
+
+/* Scheduler default setting */
+#define SCHEDULER_DEFAULT_ON_TIME_S   (15 * 60)
+#define SCHEDULER_DEFAULT_OFF_TIME_S  (60 * 60)
 
 #endif
