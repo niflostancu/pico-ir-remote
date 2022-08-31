@@ -9,6 +9,7 @@ pico_generate_pio_header(ir_proto_nec_custom ${CMAKE_CURRENT_LIST_DIR}/cust_nec_
 target_link_libraries(ir_proto_nec_custom PUBLIC
     pico_stdlib
     hardware_pio
+    ir_proto_lib
 )
 
 # add the `binary` directory so that the generated headers are included in the project

@@ -22,7 +22,7 @@ struct base_ir_device_mod {
      * Transmits a raw packet over the air (using device-specific IR
      * modulation).
      */
-    int (*tx_raw)(void *instdata, const uint32_t *packet, uint32_t len);
+    int (*tx_raw)(void *instdata, const uint8_t *packet, uint32_t len);
 
     /**
      * Controls the on/off state of the device.

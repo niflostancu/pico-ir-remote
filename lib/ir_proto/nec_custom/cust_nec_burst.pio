@@ -4,7 +4,6 @@
 
 .define NUM_CYCLES  10              ; how many carrier cycles to generate
 .define BURST_IRQ   7               ; which IRQ should trigger a carrier burst
-.define SIGNAL_IRQ  6               ; the IRQ used to signal burst end
 .define public TICKS_PER_LOOP 8     ; the number of instructions in the loop (for timing)
 
 .wrap_target

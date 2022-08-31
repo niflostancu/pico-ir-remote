@@ -4,6 +4,27 @@
 #include "ir_utils.h"
 
 
+
+/**
+ * Builds a 32-bit word from individual data bytes
+ * (controllable byte-ordering).
+ */
+uint32_t ir_proto_make_word(const uint8_t *data, uint8_t len, uint8_t little_endian)
+{
+    uint32_t word = 0;
+    int i;
+    for (i=0; i<len; i++) {
+        if (little_endian) {
+            word = (word << 8) | data[i];
+        } else {
+            word |= (data[i] << (8 * i));
+        }
+    }
+
+    return word;
+}
+
+
 /**
  * Swaps endianness: big to little or little to big.
  */

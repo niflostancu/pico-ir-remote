@@ -2,14 +2,13 @@
 
 ; Transmits the proprietary IR Air Conditioner frame.
 ;
-; Accepts 4 x 32-bit words (first one is a 2-byte header) from the transmit FIFO
-; and sends them least-significant bit first using Pulse Distance Modulation.
+; Accepts 4 x 32-bit words (note: first one is a special header) from the
+; TX FIFO and sends them least-significant bit first using Pulse
+; Distance Modulation.
 ;
 .define BURST_IRQ         7             ; the IRQ used to trigger a carrier burst
-.define SIGNAL_IRQ        6             ; the IRQ used to signal burst end
-.define WORDS_PER_PACKET  3             ; number of words per packet (w/o header)
 .define SYNC_BURSTS       11            ; how many bursts to transmit for a SYNC
-.define SYNC_SPACE_DELAY  62            ; start delay (in ticks) after sync
+.define SYNC_SPACE_DELAY  60            ; start delay (in ticks) after sync
 .define SHORT_DELAY       8             ; short delay (space) for logical 0
 .define LONG_DELAY        30            ; long delay (space) for logical 1
 
@@ -21,27 +20,20 @@ sync_burst:
     irq wait BURST_IRQ [9]
     jmp X-- sync_burst
 
-    nop [SYNC_SPACE_DELAY / 2]
-    nop [SYNC_SPACE_DELAY / 2]
+    ; first 4LSb: the number of words to be sent
+    out Y, 4 [SYNC_SPACE_DELAY / 2 - 2]
+    ; next 4LSb: initial header shift / ignore bytes
+    out X, 4 [SYNC_SPACE_DELAY / 2 - 2]
+    jmp header_check
+header_shift:
+    ; shift / ignore X bytes from the OSR
+    out NULL, 8
+header_check:
+    jmp X-- header_shift
+    jmp data_bit_start
 
-    set Y, 16
-    jmp header_bit_start
-
-header_bit:
-    out X, 1
-    jmp !X header_bit_start
-    nop [LONG_DELAY]
-header_bit_start:
-    irq wait BURST_IRQ [10]
-    irq wait BURST_IRQ [10 + SHORT_DELAY]
-
-    jmp Y-- header_bit
-
-    set Y, (WORDS_PER_PACKET - 1)
-
-data_packet:
+data_pull:
     pull
-
 data_bit:
     out X, 1
     jmp !X data_bit_start
@@ -51,8 +43,7 @@ data_bit_start:
     irq wait BURST_IRQ [10 + SHORT_DELAY]
 
     jmp !OSRE data_bit
-    jmp Y-- data_packet
-
+    jmp Y-- data_pull
 .wrap
 
 
