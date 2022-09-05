@@ -24,6 +24,7 @@
 
 static void board_init();
 static void board_set_led(uint8_t state);
+static void board_btn_callback(uint gpio, uint32_t events);
 static void fatal_error(const char *message);
 
 #define STATUS_LED_ON_TIME    250
@@ -33,6 +34,8 @@ static void fatal_error(const char *message);
 static struct {
     uint8_t blink_state;
     absolute_time_t blink_time;
+
+    uint8_t scheduler_next;
 
 } main_internal_state = {0};
 
@@ -64,7 +67,8 @@ int main() {
             main_internal_state.blink_state = !main_internal_state.blink_state;
         }
         /* run scheduler's processing pass */
-        scheduler_process(0);
+        scheduler_process(main_internal_state.scheduler_next);
+        main_internal_state.scheduler_next = 0;
     }
     return 0;
 }
@@ -84,9 +88,17 @@ void board_init()
 #endif
 
     gpio_init(BOARD_IR_LED_PIN);
-    gpio_set_dir(BOARD_IR_LED_PIN, 1);
+    gpio_set_dir(BOARD_IR_LED_PIN, true);
     gpio_set_slew_rate(BOARD_IR_LED_PIN, GPIO_SLEW_RATE_FAST);
     gpio_set_drive_strength(BOARD_IR_LED_PIN, GPIO_DRIVE_STRENGTH_12MA);
+
+#if defined(BOARD_SCHEDULER_NEXT_BTN)
+    gpio_init(BOARD_SCHEDULER_NEXT_BTN);
+    gpio_set_dir(BOARD_IR_LED_PIN, false);
+    gpio_pull_up(BOARD_SCHEDULER_NEXT_BTN);
+    gpio_set_irq_enabled_with_callback(BOARD_SCHEDULER_NEXT_BTN,
+            GPIO_IRQ_EDGE_RISE, true, &board_btn_callback);
+#endif
 }
 
 void board_set_led(uint8_t state)
@@ -95,6 +107,17 @@ void board_set_led(uint8_t state)
     gpio_put(PICO_DEFAULT_LED_PIN, state);
 #elif defined(RASPBERRYPI_PICO_W)
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, state);
+#endif
+}
+
+void board_btn_callback(uint gpio, uint32_t events)
+{
+    // printf("Btn callback %i (%02X)", gpio, events);
+#if defined(BOARD_SCHEDULER_NEXT_BTN)
+    if (gpio == BOARD_SCHEDULER_NEXT_BTN) {
+        /** Force the next state. */
+        main_internal_state.scheduler_next = 1;
+    }
 #endif
 }
 

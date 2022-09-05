@@ -10,6 +10,7 @@
 
 /** GPIOs */
 #define BOARD_IR_LED_PIN 			1
+#define BOARD_SCHEDULER_NEXT_BTN 	4
 
 /** The controlled IR device model name. */
 #define IR_DEVICE_MODULE starlight_ac
