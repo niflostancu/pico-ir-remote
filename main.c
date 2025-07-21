@@ -69,6 +69,8 @@ int main() {
         /* run scheduler's processing pass */
         scheduler_process(main_internal_state.scheduler_next);
         main_internal_state.scheduler_next = 0;
+
+        tight_loop_contents();
     }
     return 0;
 }

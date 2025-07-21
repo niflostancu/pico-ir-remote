@@ -6,6 +6,7 @@ add_library(ir_proto_lib ir_utils.c)
 target_include_directories(ir_proto_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(nec_custom)
+add_subdirectory(capture)
 
 target_link_libraries(ir_proto_lib PUBLIC ir_proto_nec_custom)
 
