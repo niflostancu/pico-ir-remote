@@ -7,5 +7,5 @@ add_library(main_lib
 )
 
 target_link_libraries(main_lib
-    PRIVATE pico_stdlib ir_capture ir_dev_models pico_cli_lib)
+    PRIVATE pico_stdlib ir_capture ir_dev_models rp_cli rp_cli_rp_stdio)
 
