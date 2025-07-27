@@ -17,7 +17,7 @@
 #include "pico/cyw43_arch.h"
 #endif
 
-#include "lib/main/commands.h"
+#include "lib/main/commands/commands.h"
 #include "lib/main/device_mgr.h"
 #include "lib/main/scheduler.h"
 #include "custom_config.h"
@@ -44,7 +44,7 @@ int main() {
     board_init();
     stdio_init_all();
 
-    main_cmd_init();
+    main_cli_init();
     scheduler_init();
 
     int ret = device_mgr_init();

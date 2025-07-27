@@ -1,11 +1,13 @@
 # Main firmware components
 
 add_library(main_lib
-    commands.c
     device_mgr.c
     scheduler.c
 )
 
+add_subdirectory(./commands)
+
+target_link_libraries(main_lib PUBLIC main_commands)
 target_link_libraries(main_lib
-    PRIVATE pico_stdlib ir_capture ir_dev_models rp_cli rp_cli_rp_stdio)
+    PRIVATE pico_stdlib ir_capture ir_dev_models)
 

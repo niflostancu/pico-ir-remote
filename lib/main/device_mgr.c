@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "lib/ir_proto/capture/ircapture.h"
 #include "./device_mgr.h"
 #include "custom_config.h"
 
@@ -26,6 +27,7 @@ static struct {
 int device_mgr_init()
 {
     main_device.mod->init(&main_device.instdata);
+    ir_capture_init();
     return 0;
 }
 
