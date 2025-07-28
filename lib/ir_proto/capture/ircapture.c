@@ -1,9 +1,9 @@
-#include <hardware/gpio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 #include "pico/stdlib.h"
+#include "hardware/gpio.h"
 #include "hardware/timer.h"
 #include "hardware/clocks.h"
 
@@ -79,20 +79,34 @@ void ir_capture_print(uint32_t max_entries, uint32_t offset)
 
     printf("IR_CAPTURE_SIZE=%i (gpio %i)\r\n", ir_capture_idx, IR_RECEIVER_PIN);
     for (i=offset; i<max_entries && i < ir_capture_idx; i++) {
-        uint32_t sign_bit = ir_capture_buf[i] >> 31;
-        printf("%b:%d\t", sign_bit, (ir_capture_buf[i] & ~(1U << 31)));
+        bool is_burst = IR_CAPTURE_IS_BURST(ir_capture_buf[i]);
+        printf("%b:%d\t", is_burst, IR_CAPTURE_GET_WIDTH(ir_capture_buf[i]));
         if ((i - prev_split) >= IR_CAPTURE_PRINT_SPLIT) {
             printf("\r\n");
             prev_split = i;
         }
     }
+    if ((prev_split + 1) < max_entries)
+        printf("\r\n");
 }
 
-static void ir_capture_record_bit(bool bit, uint32_t duration)
+/**
+ * Use to fetch the capture buffer (read-only!).
+ *
+ * Also returns the number of items inside the buffer.
+ */
+unsigned int ir_capture_get_buffer(const uint32_t * *out_buf)
+{
+    /* note: it's okay to get rid of volatile */
+    *out_buf = (const uint32_t *)ir_capture_buf;
+    return ir_capture_idx;
+}
+
+static void ir_capture_record_bit(bool is_burst, uint32_t duration)
 {
     if ((ir_capture_idx) >= IR_CAPTURE_BUF_SIZE)
         return;
-    if (bit) duration |= (1 << 31);
+    if (is_burst) duration |= IR_CAPTURE_BURST;
     ir_capture_buf[ir_capture_idx++] = duration;
 }
 

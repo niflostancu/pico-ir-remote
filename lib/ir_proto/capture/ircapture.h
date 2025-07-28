@@ -23,6 +23,12 @@
 
 // public API
 
+#define IR_CAPTURE_BURST  (1U << 31) 
+#define IR_CAPTURE_IS_BURST(data)  \
+    ((data) >> 31)
+#define IR_CAPTURE_GET_WIDTH(data) \
+    (((data) & ~IR_CAPTURE_BURST))
+
 /**
  * Initializes the GPIO used for capturing IR data.
  */
@@ -39,7 +45,16 @@ int ir_capture_start();
 int ir_capture_stop();
 
 /**
+ * Use to fetch the capture buffer (read-only!).
+ *
+ * Also returns the number of items inside the buffer.
+ */
+unsigned int ir_capture_get_buffer(const uint32_t * *out_buf);
+
+/**
  * Prints the contents of the raw IR capture buffer in ASCII format.
+ *
+ * Useful for quick debugging.
  */
 void ir_capture_print(uint32_t max_entries, uint32_t offset);
 
