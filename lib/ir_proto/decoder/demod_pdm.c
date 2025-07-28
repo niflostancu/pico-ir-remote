@@ -229,7 +229,7 @@ enum ir_pdm_pulse_tim_type _pdm_classify_pulse_timing(
 {
     bool is_burst = IR_CAPTURE_IS_BURST(raw_pulse);
     float width = (float)IR_CAPTURE_GET_WIDTH(raw_pulse);
-    const float tolerance = (float)cfg->adv_timing.tolerance_percent / 100.0;
+    const float tolerance = (float)cfg->adv_timing.tolerance / 100.0;
     float min_width = cfg->adv_timing.datap_us;
     if (min_width > cfg->adv_timing.zero_bit_us) min_width = cfg->adv_timing.zero_bit_us;
     if (min_width > cfg->adv_timing.one_bit_us) min_width = cfg->adv_timing.one_bit_us;

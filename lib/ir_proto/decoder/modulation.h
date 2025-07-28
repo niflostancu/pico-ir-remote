@@ -34,7 +34,7 @@ struct ir_decode_mod_config {
     /** Advanced timing options */
     struct {
         /** Timing tolerance (%) */
-        uint8_t tolerance_percent;
+        uint8_t tolerance;
         /** Typical pause period to switch to idle state */
         uint16_t idle_ms;
         /** Typical data pulse length (microseconds) */
