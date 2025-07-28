@@ -7,6 +7,7 @@ target_include_directories(ir_proto_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(nec_custom)
 add_subdirectory(capture)
+add_subdirectory(decoder)
 
 target_link_libraries(ir_proto_lib PUBLIC ir_proto_nec_custom)
 

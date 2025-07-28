@@ -6,5 +6,7 @@ add_library(main_commands
 )
 
 target_link_libraries(main_commands
-    PUBLIC pico_stdlib ir_capture ir_dev_models rp_cli rp_cli_rp_stdio)
+    PUBLIC pico_stdlib
+    ir_capture ir_decoder ir_dev_models 
+    rp_cli rp_cli_rp_stdio)
 
