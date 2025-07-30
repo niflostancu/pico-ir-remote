@@ -21,7 +21,22 @@
 #define IR_RECEIVER_PIN  -1
 #endif
 
+#ifndef IR_CAPTURE_FILTER_DEBOUNCE_US
+/** Filter any carrier signals using a debounce period. */
+#define IR_CAPTURE_FILTER_DEBOUNCE_US 0
+#endif
+
 // public API
+
+/** Encapsulates metadata about a raw signal. */
+struct ir_capture_metadata {
+    /** Whether the carrier signal was captured unfiltered
+     * (i.e., with individual pulses). */
+    unsigned int unfiltered: 1;
+    /** If unfiltered carrier was captured, its original frequency will be
+     * detected. */
+    unsigned int freq_hz;
+};
 
 #define IR_CAPTURE_BURST  (1U << 31) 
 #define IR_CAPTURE_IS_BURST(data)  \
@@ -33,6 +48,17 @@
  * Initializes the GPIO used for capturing IR data.
  */
 int ir_capture_init();
+
+/**
+ * IR capture processing loop. Call regularly to update the internal state, run
+ * callbacks etc.
+ */
+int ir_capture_process();
+
+/**
+ * Resets the capture buffers and internal state.
+ */
+void ir_capture_reset();
 
 /**
  * Starts a IR capture using the GPIO bank IRQ.
@@ -49,7 +75,8 @@ int ir_capture_stop();
  *
  * Also returns the number of items inside the buffer.
  */
-unsigned int ir_capture_get_buffer(const uint32_t * *out_buf);
+unsigned int ir_capture_get_buffer(const uint32_t * *out_buf,
+                                   struct ir_capture_metadata *out_meta);
 
 /**
  * Prints the contents of the raw IR capture buffer in ASCII format.

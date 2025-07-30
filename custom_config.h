@@ -14,7 +14,7 @@
 
 /** Raw IR receiver / decoder function */
 #define IR_RECEIVER_PIN   1
-#define IR_RECV_FILTER_CARRIER_US  29
+#define IR_CAPTURE_FILTER_DEBOUNCE_US  30
 
 /** The controlled IR device model name. */
 #define IR_DEVICE_MODULE starlight_ac

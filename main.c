@@ -20,6 +20,7 @@
 #include "lib/main/commands/commands.h"
 #include "lib/main/device_mgr.h"
 #include "lib/main/scheduler.h"
+#include "lib/ir_proto/capture/ircapture.h"
 #include "custom_config.h"
 
 static void board_init();
@@ -46,6 +47,7 @@ int main() {
 
     main_cli_init();
     scheduler_init();
+    ir_capture_init();
 
     int ret = device_mgr_init();
     if (ret < 0) {
@@ -69,6 +71,7 @@ int main() {
         /* run scheduler's processing pass */
         scheduler_process(main_internal_state.scheduler_next);
         main_internal_state.scheduler_next = 0;
+        ir_capture_process();
 
         tight_loop_contents();
     }

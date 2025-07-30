@@ -22,6 +22,7 @@
 // command handlers
 RP_CLI_STATIC_CMD(ircap_cmd_start);
 RP_CLI_STATIC_CMD(ircap_cmd_stop);
+RP_CLI_STATIC_CMD(ircap_cmd_clear);
 RP_CLI_STATIC_CMD(ircap_cmd_print);
 RP_CLI_STATIC_CMD(ircap_cmd_decode);
 RP_CLI_STATIC_CMD(ircap_cmd_exit);
@@ -33,6 +34,7 @@ const struct rp_cli_cmd_entry ircap_commands[] = {
     RP_CLI_HELP_CMD_ENTRY(&main_cli),
     {"start", "Powers the device on/off.", "", ircap_cmd_start},
     {"stop", "Enter raw IR capture app.", "", ircap_cmd_stop},
+    {"clear", "Clears the raw capture buffer/state.", "", ircap_cmd_clear},
     {"print", "Prints the contents of a buffer.", "", ircap_cmd_print},
     {"decode", "Decodes the captured pulses.", "", ircap_cmd_decode},
     {"exit", "Exits IR capture mode.", "", ircap_cmd_exit},
@@ -76,6 +78,14 @@ rp_cli_action_ret_t ircap_cmd_stop(int argc, const char *argv[],
     return 0;
 }
 
+rp_cli_action_ret_t ircap_cmd_clear(int argc, const char *argv[],
+        void *aux_data)
+{
+    ir_capture_reset();
+    printf("Raw IR capture cleared!\r\n");
+    return 0;
+}
+
 rp_cli_action_ret_t ircap_cmd_print(int argc, const char *argv[],
         void *aux_data)
 {
@@ -105,7 +115,8 @@ rp_cli_action_ret_t ircap_cmd_decode(int argc, const char *argv[],
 {
     struct ir_decode_mod_config cfg = default_decode_cfg;
     const uint32_t *raw_buf = NULL;
-    int raw_len = ir_capture_get_buffer(&raw_buf);
+    struct ir_capture_metadata cap_meta;
+    int raw_len = ir_capture_get_buffer(&raw_buf, &cap_meta);
     int res = ir_decode_mod_pdm(raw_buf, raw_len, &cfg, decode_buf, IR_DECODE_BUF_MAX);
     if (res < 0) {
         printf("Decode failed with %i!\r\n", res);
