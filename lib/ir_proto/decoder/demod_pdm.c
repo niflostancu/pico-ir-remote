@@ -68,7 +68,7 @@ int ir_decode_mod_pdm(const uint32_t *raw_pulses, unsigned int raw_length,
         bool is_burst = IR_CAPTURE_IS_BURST(raw_pulses[ridx]);
         unsigned int width = IR_CAPTURE_GET_WIDTH(raw_pulses[ridx]);
         enum ir_pdm_pulse_tim_type pulse_type = _pdm_classify_pulse_timing(raw_pulses[ridx], cfg);
-        printf("DBG: pulse %i: %u => 0x%X\r\n", is_burst, width, pulse_type);
+        /* printf("DBG: pulse %i: %u => 0x%X\r\n", is_burst, width, pulse_type); */
 
 _ir_pdm_repeat:
         switch (state) {
